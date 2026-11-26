@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Elpriset nu</title>
+<meta name="description" content="Vad det kostar att duscha, ladda elbilen, tvätta och diska just nu, per elområde – och elpriset över tid.">
+<meta name="theme-color" content="#3A130A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Elpriset">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#FFF7F2; --soft:#FBE3D6; --label:#F9DCCB; --peach:#FFC08A;
+  --cream:#FFF8F2; --dark:#2A1208; --brown:#8A4A30;
+  --glass:rgba(255,236,224,.10); --glass-b:rgba(255,255,255,.18); --deep:rgba(48,14,6,.38);
+  --z1:#FFF1E6; --z2:#FFD27A; --z3:#FF9447; --z4:#EE4F2E; --z5:#B0183E;
+  --good:#CFF3C4; --watch:#FFE08A; --bad:#FF5A4E;
+  --cta:linear-gradient(180deg,#FF9A52,#F26A2E);
+}
+*{box-sizing:border-box}
+html{background:#3A130A}
+body{position:relative}
+.glowclip{position:absolute;left:0;right:0;top:0;height:900px;overflow:hidden;pointer-events:none;z-index:0}
+body{
+  margin:0;color:var(--ink);font:400 15px/1.45 'Inter Tight',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  background:
+    radial-gradient(800px 600px at 100% 100%,rgba(240,150,120,.35),transparent 60%),
+    linear-gradient(165deg,#3A130A 0%,#7A2A12 30%,#C24A1E 58%,#E9845C 100%);
+  background-attachment:fixed;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.glow{position:absolute;left:50%;top:60px;width:440px;height:520px;margin-left:-180px;pointer-events:none;z-index:0}
+.glow i{position:absolute;border-radius:50%}
+.wrap{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:22px 32px 48px}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:#FFD9BF}
+.num{font-variant-numeric:tabular-nums}
+.l{font:500 13px 'Inter Tight',sans-serif;color:var(--label)}
+.hidden{display:none!important}
+
+/* glass */
+.g{background:var(--glass);border:1px solid var(--glass-b);border-radius:24px;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:inset 0 1px 0 rgba(255,255,255,.16);padding:18px 20px;min-width:0}
+.d{background:var(--deep);border:1px solid rgba(255,255,255,.12);border-radius:24px;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);padding:22px 24px;min-width:0}
+.cr{background:rgba(255,248,242,.94);color:var(--dark);border-radius:22px;padding:16px 18px;box-shadow:0 20px 40px -20px rgba(80,20,0,.6);min-width:0}
+.cr .l{color:var(--brown)}
+
+/* header */
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font:500 18px 'Inter Tight';letter-spacing:-.01em}
+.pnav{display:flex;gap:2px;padding:5px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);overflow-x:auto;scrollbar-width:none}
+.pnav::-webkit-scrollbar{display:none}
+.pnav button{border:0;background:transparent;padding:9px 16px;border-radius:999px;color:var(--soft);font-size:14px;white-space:nowrap;min-height:38px}
+.pnav button.on{background:var(--cream);color:var(--dark);font-weight:500}
+.pnav .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.round{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);display:grid;place-items:center;flex:0 0 auto}
+
+/* hero */
+.hero{display:grid;grid-template-columns:440px 1fr 420px;gap:24px;margin-top:40px}
+.hero h1{margin:6px 0 0;font:500 64px/0.98 'Inter Tight';letter-spacing:-.04em}
+.hero p.lead{margin:14px 0 0;font-size:18px;color:#FFF0E6;max-width:400px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.chip{padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.14);font-size:13px}
+.chip.y{background:rgba(255,224,138,.22)}
+.bignum{display:flex;align-items:center;gap:24px;margin-top:22px;padding:0 4px}
+.bignum .v{font:300 84px/0.9 'Inter Tight';letter-spacing:-.05em}
+.bignum .v small{font:500 14px 'Inter Tight';color:var(--label);letter-spacing:0;margin-left:4px}
+.vr{width:1px;height:80px;background:rgba(255,255,255,.25)}
+.lvl{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500}
+.lvl i{width:12px;height:12px;border-radius:50%;background:var(--c)}
+.rcol{display:flex;flex-direction:column;gap:12px}
+.zgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.zc{text-align:left;border:1px solid var(--glass-b);background:var(--glass);border-radius:20px;padding:12px 14px;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);color:var(--ink)}
+.zc.on{background:rgba(255,248,242,.94);color:var(--dark)}
+.zc.on .l{color:var(--brown)}
+.zc .p{font:300 32px/1.1 'Inter Tight';letter-spacing:-.03em}
+.zc .p small{font-size:13px;font-weight:500}
+.sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--c);box-shadow:0 0 0 1.5px rgba(0,0,0,.15)}
+
+/* tiles */
+h2{margin:0;font:500 26px 'Inter Tight';letter-spacing:-.02em}
+.sec{margin-top:36px}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.tile{display:flex;flex-direction:column;gap:12px;cursor:pointer;transition:transform .15s}
+.tile:hover{transform:translateY(-2px)}
+.th{display:flex;gap:12px;align-items:center}
+.ic{width:44px;height:44px;border-radius:14px;background:var(--cream);display:grid;place-items:center;flex:0 0 auto}
+.th b{display:block;font:500 20px 'Inter Tight';letter-spacing:-.01em}
+.tb{display:flex;gap:14px;align-items:center}
+.map{width:56px;flex:0 0 auto}
+.map svg{display:block;width:100%;height:auto}
+.rows{flex:1;display:grid;gap:4px}
+.rw{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.rw:last-child{border-bottom:0}
+.rw span:first-child{font-size:13px;color:var(--label)}
+.rw span:last-child{font:400 20px 'Inter Tight';letter-spacing:-.01em}
+.one .rw span:last-child{font:300 46px/1 'Inter Tight';letter-spacing:-.04em}
+.one .rw{border:0}
+.best{font-size:13px;color:var(--soft);border-top:1px solid rgba(255,255,255,.14);padding-top:10px}
+.best b{font-weight:500;color:var(--ink)}
+.save{display:inline-block;margin-top:6px;padding:4px 10px;border-radius:999px;background:rgba(207,243,196,.2);color:var(--good);font-size:12.5px}
+.src{margin-top:12px;text-align:right}
+
+/* charts */
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;overflow:visible;touch-action:pan-y}
+.tip{position:absolute;pointer-events:none;background:var(--cream);color:var(--dark);border-radius:14px;padding:8px 12px;font-size:12.5px;box-shadow:0 12px 30px -10px rgba(60,10,0,.6);white-space:nowrap;opacity:0;transition:opacity .1s;z-index:5;font-variant-numeric:tabular-nums}
+.tip b{font-size:15px;font-weight:600}
+.tip .m{color:var(--brown)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--label);margin-top:12px}
+.legend i{display:inline-block;width:12px;height:4px;border-radius:2px;margin-right:6px;vertical-align:3px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:18px;border-top:1px solid rgba(255,255,255,.12)}
+.stats>div{padding:14px 16px 0;border-right:1px solid rgba(255,255,255,.12)}
+.stats>div:first-child{padding-left:0}
+.stats>div:last-child{border-right:0}
+.stats .v{font:300 34px/1.1 'Inter Tight';letter-spacing:-.03em}
+.stats .v small{font-size:13px;font-weight:500;color:var(--label)}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+select,input[type=number]{font:inherit;color:var(--dark);background:var(--cream);border:0;border-radius:999px;padding:9px 14px;min-height:40px}
+.range{display:flex;align-items:center;gap:12px;margin-top:16px;font-size:13px;color:var(--label)}
+.range input{flex:1;accent-color:#FF9A52}
+.loading{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--label)}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--peach);border-radius:50%;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.acts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.act .v{font:300 38px/1.1 'Inter Tight';letter-spacing:-.03em;margin:4px 0}
+.foot{margin-top:32px;font-size:12.5px;color:var(--label);text-align:center;line-height:1.6;opacity:.85}
+.err{margin-top:16px;padding:12px 16px;border-radius:16px;background:rgba(255,90,78,.2);border:1px solid rgba(255,90,78,.5)}
+
+/* bottom tab bar (phone) */
+.tabbar{display:none}
+
+/* dialog */
+dialog{border:0;background:rgba(255,250,246,.98);color:var(--dark);border-radius:26px;padding:0;width:min(500px,calc(100vw - 32px));max-height:86vh;box-shadow:0 40px 80px -30px rgba(40,8,0,.8)}
+dialog::backdrop{background:rgba(42,18,8,.45);backdrop-filter:blur(6px)}
+.dlg{padding:22px;overflow:auto;max-height:86vh}
+.dlg h3{margin:0;font:500 26px 'Inter Tight';letter-spacing:-.02em}
+.dlg .sub{font-size:13px;color:var(--brown);margin:2px 0 12px}
+.fld{display:grid;grid-template-columns:1fr 140px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(42,18,8,.1)}
+.fld label{font-size:15px}
+.fld label small{display:block;font-size:12.5px;color:var(--brown)}
+.fld input,.fld select{width:100%;background:#F4E9E1}
+.dlg h4{margin:18px 0 2px;font:500 18px 'Inter Tight'}
+.cta{border:0;background:var(--cta);color:#fff;font:600 16px 'Inter Tight';min-height:50px;padding:0 28px;border-radius:999px;box-shadow:0 8px 20px -8px rgba(160,40,0,.8)}
+
+@media (max-width:1180px){
+  .hero{grid-template-columns:1fr 1fr}
+  .hero .spacer{display:none}
+  .tiles,.acts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .wrap{padding:14px 16px 110px}
+  header .pnav.views,header #setBtn{display:none}
+  #zoneNav{width:100%} #zoneNav button{flex:1;padding:9px 6px}
+  .right{width:100%;margin-left:0}
+  .hero{grid-template-columns:1fr;margin-top:22px;gap:18px}
+  .hero h1{font-size:44px;letter-spacing:-.035em}
+  .hero p.lead{font-size:16px}
+  .bignum .v{font-size:68px}
+  .tiles,.acts{grid-template-columns:1fr}
+  .stats .v{font-size:26px}
+  .stats>div{padding:12px 10px 0}
+  .d{padding:18px 16px}
+  h2{font-size:22px}
+  .glow{left:auto;right:-140px;top:40px;margin:0;transform:scale(.7)}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;justify-content:space-around;padding:8px 8px calc(10px + env(safe-area-inset-bottom));background:rgba(40,10,4,.62);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.12)}
+  .tabbar button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font:500 11px 'Inter Tight';color:var(--label);min-width:72px;min-height:44px;justify-content:center}
+  .tabbar button.on{color:var(--ink)}
+}
+</style>
+</head>
+<body>
+<div class="glowclip" aria-hidden="true"><div class="glow">
+  <i style="left:150px;top:70px;width:160px;height:330px;background:rgba(255,248,242,.55);filter:blur(38px);transform:rotate(-16deg)"></i>
+  <i style="left:210px;top:150px;width:260px;height:96px;background:rgba(255,232,214,.45);filter:blur(30px);transform:rotate(-6deg)"></i>
+  <i style="left:96px;top:46px;width:96px;height:120px;background:rgba(70,22,10,.5);filter:blur(18px)"></i>
+  <i style="left:120px;top:380px;width:220px;height:120px;background:rgba(255,240,230,.3);filter:blur(40px)"></i>
+</div></div>
+
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 2 4.5 13.5h6.5L9.5 22l10-12.5H13z" fill="none" stroke="#FFC08A" stroke-width="2" stroke-linejoin="round"/></svg>
+      Elpriset
+    </div>
+    <nav class="pnav views" id="viewNav" aria-label="Vyer"><button data-v="now">Just nu</button><button data-v="time">Över tid</button></nav>
+    <div class="right">
+      <nav class="pnav" id="zoneNav" aria-label="Elområde"></nav>
+      <button class="round" id="setBtn" aria-label="Inställningar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF7F2" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+    </div>
+  </header>
+  <div id="err" class="err hidden"></div>
+
+  <!-- ============ JUST NU ============ -->
+  <main id="nowView">
+    <div class="hero">
+      <div>
+        <div class="l" id="nowDate"></div>
+        <h1 id="nowH1">Hämtar elpriset…</h1>
+        <p class="lead" id="nowLead"></p>
+        <div class="chips" id="nowChips"></div>
+        <div class="bignum">
+          <div><span class="l">Elpris just nu</span><div class="v num" id="nowBig">–</div></div>
+          <i class="vr"></i>
+          <div><div class="lvl" id="nowLvl"></div><div class="l" id="nowSlot" style="margin-top:6px"></div></div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="rcol">
+        <div class="cr">
+          <div style="display:flex;justify-content:space-between"><span class="l" id="crTitle">Idag · kr/kWh per kvart</span><span class="l" id="crZone"></span></div>
+          <div class="chart" id="miniChart" style="margin-top:8px"></div>
+        </div>
+        <div class="zgrid" id="zgrid"></div>
+      </div>
+    </div>
+
+    <section class="sec">
+      <div class="sechead"><h2>Så mycket kostar det just nu att</h2><span class="l" id="tilesSub"></span></div>
+      <div class="tiles" id="tiles"></div>
+      <div class="l src">Källa: elprisetjustnu.se · Nord Pool</div>
+    </section>
+  </main>
+
+  <!-- ============ ÖVER TID ============ -->
+  <main id="timeView" class="hidden">
+    <div class="hero">
+      <div>
+        <div class="l" id="tDate"></div>
+        <h1 id="tH1">…</h1>
+        <p class="lead" id="tLead"></p>
+        <div class="chips" id="tChips"></div>
+      </div>
+      <div class="spacer"></div>
+      <div class="rcol">
+        <div class="zgrid" id="zgrid2"></div>
+      </div>
+    </div>
+
+    <section class="sec d">
+      <div class="sechead"><h2>Idag och imorgon</h2><span class="l" id="dayLabel"></span></div>
+      <div class="chart" id="dayChart"></div>
+      <div class="legend" id="dayLegend"></div>
+    </section>
+
+    <section class="sec d" style="margin-top:16px">
+      <div class="sechead">
+        <h2>Elpriset över tid</h2>
+        <div class="ctrl">
+          <select id="histMetric" aria-label="Visa"></select>
+          <nav class="pnav" id="rangeNav" aria-label="Period"></nav>
+        </div>
+      </div>
+      <div class="chart" id="histChart"></div>
+      <div class="legend" id="histLegend"></div>
+      <div class="stats" id="histStats"></div>
+      <div class="range"><label for="rangeSlider">Längd</label><input type="range" id="rangeSlider" min="2" max="365" value="30"><span id="rangeLabel" class="num" style="min-width:72px;text-align:right">30 dagar</span></div>
+      <div class="loading hidden" id="histLoading"><div class="spin"></div><span>Hämtar historik…</span></div>
+    </section>
+
+    <section class="sec" id="actsSec">
+      <div class="sechead"><h2>Bästa tiden att starta</h2><span class="l">billigaste sammanhängande tid från nu</span></div>
+      <div class="acts" id="acts"></div>
+    </section>
+  </main>
+
+  <div class="foot">Spotpriser från <a href="https://www.elprisetjustnu.se" target="_blank" rel="noopener">elprisetjustnu.se</a>, uppdateras var 5:e minut.<br><span id="modeNote"></span></div>
+</div>
+
+<nav class="tabbar" id="tabbar" aria-label="Flikar">
+  <button data-v="now"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 2 4.5 13.5h6.5L9.5 22l10-12.5H13z"/></svg>Just nu</button>
+  <button data-v="time"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 17l5-6 4 3 7-8"/><path d="M3.5 21h17"/></svg>Över tid</button>
+  <button data-v="set"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Inställningar</button>
+</nav>
+
+<dialog id="dlg">
+  <form method="dialog" class="dlg">
+    <h3>Inställningar</h3>
+    <div class="sub">Sparas på den här enheten.</div>
+    <div class="fld"><label for="cHome">Min zon<small>Används i rubriken när du visar alla</small></label><select id="cHome"><option>SE1</option><option>SE2</option><option>SE3</option><option>SE4</option></select></div>
+    <div class="fld"><label for="cMode">Prisvisning<small>Vad räknas in i priset?</small></label>
+      <select id="cMode"><option value="spot">Spotpris exkl. moms</option><option value="moms">Spotpris inkl. moms</option><option value="total">Totalpris</option></select></div>
+    <div class="fld tot"><label for="cPaslag">Elhandlarens påslag<small>öre/kWh inkl. moms</small></label><input id="cPaslag" type="number" step="0.1" inputmode="decimal"></div>
+    <div class="fld tot"><label for="cSkatt">Energiskatt<small>öre/kWh inkl. moms (2026: 45)</small></label><input id="cSkatt" type="number" step="0.1" inputmode="decimal"></div>
+    <div class="fld tot"><label for="cNat">Elnät, överföring<small>öre/kWh inkl. moms</small></label><input id="cNat" type="number" step="0.1" inputmode="decimal"></div>
+    <h4>Förbrukning, kWh</h4>
+    <div id="actFields"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="cta" value="ok">Spara</button></div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+const ZONES=['SE1','SE2','SE3','SE4'];
+const ZNAME={SE1:'Luleå',SE2:'Sundsvall',SE3:'Stockholm',SE4:'Malmö'};
+const ZCOL={SE1:'var(--z1)',SE2:'var(--z2)',SE3:'var(--z3)',SE4:'var(--z4)'};
+const SCALE=['#FFF1E6','#FFD27A','#FF9447','#EE4F2E','#B0183E'];
+const IC={
+  shower:'<path d="M5 20V9a5 5 0 0 1 10 0"/><path d="M11 9.5h8a4 4 0 0 0-8 0z" fill="#F26A2E"/><path d="M13 13.5v1M15 13.5v1M17 13.5v1M12.5 17v1M15 17v1M17.5 17v1"/>',
+  car:'<rect x="4" y="3.5" width="9" height="16.5" rx="2"/><path d="M3 20h11"/><path d="m9.5 7.5-2 3.5h2.5l-2 3.5"/><path d="M13 11h2a2 2 0 0 1 2 2v3a1.5 1.5 0 0 0 3 0V8.5L17.5 6"/>',
+  wash:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M4 7.5h16"/><circle cx="12" cy="14" r="4"/><path d="M7 5.3h.01M9.5 5.3h.01"/>',
+  dish:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M4 7.5h16"/><path d="M8 11v7M12 11v7M16 11v7M7 18h10"/>',
+};
+const DEFAULT_ACTS=[
+  {id:'shower',t:'Duscha',kwh:4,min:10,desc:'10 min, elvärmt vatten'},
+  {id:'car',t:'Ladda elbilen',kwh:50,min:360,desc:'≈ 300 km räckvidd'},
+  {id:'wash',t:'Tvätta',kwh:0.9,min:120,desc:'40 °C-program'},
+  {id:'dish',t:'Diska',kwh:1.1,min:120,desc:'Normalprogram'},
+];
+const DEFAULTS={view:'now',zone:'ALL',home:'SE3',mode:'moms',paslag:5,skatt:45,nat:30,days:30,metric:'kwh',acts:{}};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+const S=Object.assign({},DEFAULTS,store.get('ep:settings',{}));
+if(S.view!=='now'&&S.view!=='time')S.view='now';
+const save=()=>store.set('ep:settings',S);
+const acts=()=>DEFAULT_ACTS.map(a=>({...a,kwh:S.acts[a.id]??a.kwh}));
+const focusZone=()=>S.zone==='ALL'?S.home:S.zone;
+
+const TZ='Europe/Stockholm';
+const ymd=d=>new Intl.DateTimeFormat('sv-SE',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+const hm=d=>new Intl.DateTimeFormat('sv-SE',{timeZone:TZ,hour:'2-digit',minute:'2-digit'}).format(d);
+const longDate=d=>{const s=new Intl.DateTimeFormat('sv-SE',{timeZone:TZ,weekday:'long',day:'numeric',month:'short'}).format(d);return s.charAt(0).toUpperCase()+s.slice(1)};
+const addDays=(s,n)=>{const[y,m,d]=s.split('-').map(Number);return new Date(Date.UTC(y,m-1,d+n,12)).toISOString().slice(0,10)};
+const dayShort=s=>new Intl.DateTimeFormat('sv-SE',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z'));
+const dayLong=s=>new Intl.DateTimeFormat('sv-SE',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z'));
+
+const unitLabel=()=>S.mode==='spot'?'exkl. moms':S.mode==='moms'?'inkl. moms':'totalpris';
+const adj=spot=>S.mode==='spot'?spot:S.mode==='moms'?spot*1.25:spot*1.25+(+S.paslag + +S.skatt + +S.nat)/100;
+const kr=(v,dec=2)=>v.toLocaleString('sv-SE',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+const fmtKr=v=>kr(v)+' kr';
+
+// ---------- data ----------
+const mem={};
+async function fetchDay(zone,date){
+  const key=zone+date; if(mem[key]!==undefined) return mem[key];
+  try{
+    const r=await fetch(`https://www.elprisetjustnu.se/api/v1/prices/${date.slice(0,4)}/${date.slice(5)}_${zone}.json`);
+    if(!r.ok){mem[key]=null;return null}
+    const j=await r.json();
+    return mem[key]=j.map(p=>({t:new Date(p.time_start),e:new Date(p.time_end),v:p.SEK_per_kWh}));
+  }catch{return null}
+}
+async function daySum(zone,date){
+  const k=`ep:d:${zone}:${date}`; const c=store.get(k,null); if(c) return c;
+  const d=await fetchDay(zone,date); if(!d||!d.length) return null;
+  let s=0,w=0,mi=Infinity,ma=-Infinity; d.forEach(p=>{const m=p.e-p.t;s+=p.v*m;w+=m;mi=Math.min(mi,p.v);ma=Math.max(ma,p.v)});
+  const o={a:s/w,mi,ma}; if(date<today) store.set(k,o); return o;
+}
+async function pool(tasks,n,onProg){const out=new Array(tasks.length);let i=0,done=0;
+  await Promise.all(Array.from({length:n},async()=>{while(i<tasks.length){const my=i++;out[my]=await tasks[my]();done++;onProg&&onProg(done,tasks.length)}}));return out}
+
+let today=ymd(new Date());
+const live={};
+async function loadLive(){
+  today=ymd(new Date()); const tom=addDays(today,1);
+  ZONES.forEach(z=>{delete mem[z+today]; if(!mem[z+tom]) delete mem[z+tom]});
+  await Promise.all(ZONES.map(async z=>{const[a,b]=await Promise.all([fetchDay(z,today),fetchDay(z,tom)]);live[z]=[...(a||[]),...(b||[])]}));
+  const ok=ZONES.some(z=>live[z].length);
+  $('err').classList.toggle('hidden',ok); if(!ok) $('err').textContent='Kunde inte hämta elpriser. Kontrollera internetanslutningen.';
+}
+const nowSlot=z=>{const n=Date.now();return(live[z]||[]).find(p=>p.t<=n&&n<p.e)};
+const todaySlots=z=>(live[z]||[]).filter(p=>ymd(p.t)===today);
+const futureSlots=z=>{const n=Date.now();return(live[z]||[]).filter(p=>p.e>n)};
+const avgOf=a=>a.reduce((x,y)=>x+y,0)/(a.length||1);
+function level(z,v){const ts=todaySlots(z).map(p=>p.v).sort((a,b)=>a-b);if(!ts.length)return null;
+  const q1=ts[Math.floor(ts.length*.33)],q2=ts[Math.floor(ts.length*.66)];
+  return v<=q1?{k:'cheap',t:'Billigt',c:'var(--good)'}:v<=q2?{k:'mid',t:'Normalt',c:'var(--watch)'}:{k:'dear',t:'Dyrt',c:'var(--bad)'}}
+function cheapest(z,minutes){const s=futureSlots(z);if(!s.length)return null;
+  const sm=(s[0].e-s[0].t)/60000,n=Math.max(1,Math.round(minutes/sm));let best=null;
+  for(let i=0;i+n<=s.length;i++){if(s[i+n-1].e-s[i].t!==n*sm*60000)continue;let a=0;for(let j=i;j<i+n;j++)a+=s[j].v;a/=n;if(!best||a<best.avg)best={avg:a,start:s[i].t,end:s[i+n-1].e}}
+  return best}
+const when=d=>(ymd(d)===today?'':'i morgon ')+'kl '+hm(d);
+
+// ---------- Sweden map ----------
+const SWE=[[20.55,69.06],[21.6,68.75],[22.4,68.45],[23.6,67.95],[23.4,67.3],[23.6,66.8],[24.0,66.35],[24.15,65.83],[23.2,65.75],[22.15,65.55],[21.5,65.3],[21.2,64.75],[20.6,64.2],[20.0,63.75],[19.0,63.4],[18.4,63.0],[17.9,62.6],[17.4,62.3],[17.2,61.7],[17.15,61.0],[17.3,60.65],[18.0,60.5],[18.6,60.25],[18.9,59.85],[19.0,59.4],[18.3,59.0],[17.6,58.75],[16.8,58.5],[16.7,57.9],[16.6,57.4],[16.4,56.75],[15.95,56.15],[15.2,56.12],[14.6,56.05],[14.25,55.7],[14.3,55.45],[13.6,55.38],[13.0,55.35],[12.95,55.62],[12.7,56.05],[12.85,56.45],[12.5,56.85],[12.1,57.25],[11.75,57.65],[11.6,58.2],[11.2,58.9],[11.6,59.0],[11.85,59.4],[12.25,59.9],[12.6,60.4],[12.35,61.0],[12.7,61.55],[12.25,62.0],[12.15,62.6],[12.15,63.2],[12.5,63.7],[13.8,64.15],[14.1,64.6],[14.4,65.1],[14.6,65.8],[15.6,66.3],[16.2,66.9],[16.7,67.6],[17.9,68.2],[18.3,68.5],[19.2,68.6],[20.2,68.45],[20.0,68.9]];
+const OLAND=[[16.4,56.2],[16.65,56.6],[16.95,57.0],[17.1,57.35],[16.9,57.25],[16.55,56.8],[16.35,56.35]];
+const GOTL=[[18.15,57.0],[18.7,56.92],[18.9,57.3],[19.05,57.75],[18.8,57.95],[18.4,57.85],[18.1,57.5]];
+const ZLAT={SE1:[69.2,65.35],SE2:[65.35,61.0],SE3:[61.0,56.75],SE4:[56.75,55.2]};
+const PX=lon=>(lon-11)*0.47*20, PY=lat=>(69.2-lat)*20;
+const poly=pts=>'M'+pts.map(([lo,la])=>PX(lo).toFixed(1)+' '+PY(la).toFixed(1)).join('L')+'Z';
+const MAP_D=poly(SWE)+poly(OLAND)+poly(GOTL), MAP_W=PX(24.4), MAP_H=PY(55.2);
+let mapN=0;
+function mapSVG(only){const id='m'+(mapN++);
+  return `<svg viewBox="-4 -4 ${MAP_W+8} ${MAP_H+8}" aria-hidden="true"><defs><clipPath id="${id}"><path d="${MAP_D}"/></clipPath></defs>
+    <g clip-path="url(#${id})">${ZONES.map(z=>`<rect x="-10" y="${PY(ZLAT[z][0])}" width="${MAP_W+20}" height="${PY(ZLAT[z][1])-PY(ZLAT[z][0])}" fill="${ZCOL[z]}" opacity="${!only||only===z?1:.18}"/>`).join('')}
+    ${ZONES.slice(1).map(z=>`<line x1="-10" x2="${MAP_W+10}" y1="${PY(ZLAT[z][0])}" y2="${PY(ZLAT[z][0])}" stroke="rgba(42,18,8,.45)" stroke-width="1.5"/>`).join('')}</g>
+    <path d="${MAP_D}" fill="none" stroke="rgba(255,247,242,.6)" stroke-width="1.5" stroke-linejoin="round"/></svg>`}
+
+// ---------- charts ----------
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent&&parent.appendChild(e);return e}
+function niceTicks(min,max,count=4){if(min===max)max=min+1;const span=max-min,step0=span/count,mag=Math.pow(10,Math.floor(Math.log10(step0)));
+  const step=[1,2,2.5,5,10].map(m=>m*mag).find(s=>span/s<=count)||mag*10;const t=[],top=Math.ceil(max/step-1e-9)*step;
+  for(let v=Math.floor(min/step)*step;v<=top+step*.001;v+=step)t.push(+v.toFixed(10));return t}
+function chart(host,{series,band,height=220,bars=false,xLabels,tip,nowIdx,yFmt,light=false,axis=true}){
+  host.innerHTML='';
+  const txt=light?'#8A4A30':'#F9DCCB', grid=light?'rgba(42,18,8,.1)':'rgba(255,255,255,.12)', now=light?'#2A1208':'#FFF7F2';
+  const W=host.clientWidth||600,H=height,P={l:axis?40:4,r:6,t:8,b:axis?24:20};
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,height:H},host);
+  const tipEl=document.createElement('div');tipEl.className='tip';host.appendChild(tipEl);
+  const n=Math.max(...series.map(s=>s.data.length));
+  if(!n){const t=el('text',{x:W/2,y:H/2,'text-anchor':'middle',fill:txt,'font-size':13},svg);t.textContent='Ingen data';return}
+  const all=series.flatMap(s=>s.data.filter(v=>v!=null)).concat(band?band.hi.filter(v=>v!=null):[]);
+  let lo=Math.min(0,...all,...(band?band.lo.filter(v=>v!=null):[])),hi=Math.max(...all);
+  const ticks=niceTicks(lo,hi);lo=ticks[0];hi=ticks[ticks.length-1];
+  const x=i=>P.l+(bars?(i+.5):i)*(W-P.l-P.r)/(bars?n:Math.max(1,n-1));
+  const y=v=>P.t+(hi-v)/(hi-lo)*(H-P.t-P.b);
+  ticks.forEach(t=>{el('line',{x1:P.l,x2:W-P.r,y1:y(t),y2:y(t),stroke:grid},svg);
+    if(axis){const tx=el('text',{x:P.l-8,y:y(t)+4,'text-anchor':'end',fill:txt,'font-size':11,'font-family':'Inter Tight'},svg);tx.textContent=yFmt(t)}});
+  const step=Math.ceil(n/Math.max(2,Math.floor((W-P.l)/72)));
+  for(let i=0;i<n;i+=step){const tx=el('text',{x:x(i),y:H-5,'text-anchor':'middle',fill:txt,'font-size':11,'font-family':'Inter Tight'},svg);tx.textContent=xLabels(i)}
+  if(band){let d='';band.hi.forEach((v,i)=>{if(v!=null)d+=(d?'L':'M')+x(i)+' '+y(v)});
+    for(let i=band.lo.length-1;i>=0;i--)if(band.lo[i]!=null)d+='L'+x(i)+' '+y(band.lo[i]);
+    el('path',{d:d+'Z',fill:'#FFC08A',opacity:.18},svg)}
+  if(bars){
+    const bw=Math.max(1,(W-P.l-P.r)/n-(n>60?1:2)),s=series[0],sorted=s.data.filter(v=>v!=null).sort((a,b)=>a-b);
+    const q=v=>{let k=0;for(let j=1;j<5;j++)if(v>sorted[Math.floor(sorted.length*j/5)-1])k=j;return k};
+    s.data.forEach((v,i)=>{if(v==null)return;let c=SCALE[q(v)];if(light&&c==='#FFF1E6')c='#F3D9C6';
+      el('rect',{x:x(i)-bw/2,y:Math.min(y(v),y(0)),width:bw,height:Math.max(1,Math.abs(y(v)-y(0))),rx:Math.min(3,bw/3),fill:c,opacity:nowIdx!=null&&i<nowIdx?.35:1},svg)});
+  }else{
+    series.forEach(s=>{let d='';s.data.forEach((v,i)=>{if(v==null)return;d+=(d?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)});
+      if(series.length===1&&!band){const f=s.data.findIndex(v=>v!=null),l=s.data.length-1-[...s.data].reverse().findIndex(v=>v!=null);
+        el('path',{d:d+`L${x(l)} ${y(lo)}L${x(f)} ${y(lo)}Z`,fill:'rgba(255,192,138,.18)'},svg)}
+      el('path',{d,fill:'none',stroke:s.color,'stroke-width':series.length>1?2.2:2,'stroke-linejoin':'round','stroke-linecap':'round'},svg)});
+  }
+  if(nowIdx!=null&&nowIdx>=0){el('line',{x1:x(nowIdx),x2:x(nowIdx),y1:P.t,y2:H-P.b,stroke:now,'stroke-dasharray':'3 4',opacity:.7},svg);
+    const v=series[0].data[nowIdx]; if(v!=null) el('circle',{cx:x(nowIdx),cy:y(v)-(bars?6:0),r:5,fill:now},svg)}
+  const cross=el('line',{y1:P.t,y2:H-P.b,stroke:txt,opacity:0},svg);
+  const dots=series.map(s=>el('circle',{r:5,fill:'#FFF7F2',stroke:s.color,'stroke-width':2.5,opacity:0},svg));
+  const move=ev=>{const r=svg.getBoundingClientRect(),px=((ev.touches?ev.touches[0].clientX:ev.clientX)-r.left)*W/r.width;
+    let i=bars?Math.floor((px-P.l)/((W-P.l-P.r)/n)):Math.round((px-P.l)/((W-P.l-P.r)/Math.max(1,n-1)));i=Math.max(0,Math.min(n-1,i));
+    cross.setAttribute('x1',x(i));cross.setAttribute('x2',x(i));cross.setAttribute('opacity',.5);
+    series.forEach((s,k)=>{const v=s.data[i];if(v==null||bars){dots[k].setAttribute('opacity',0);return}dots[k].setAttribute('cx',x(i));dots[k].setAttribute('cy',y(v));dots[k].setAttribute('opacity',1)});
+    tipEl.innerHTML=tip(i);tipEl.style.opacity=1;const tw=tipEl.offsetWidth,hx=x(i)*r.width/W;
+    tipEl.style.left=Math.max(0,Math.min(r.width-tw,hx-tw/2))+'px';tipEl.style.top=(-tipEl.offsetHeight-6)+'px'};
+  const leave=()=>{tipEl.style.opacity=0;cross.setAttribute('opacity',0);dots.forEach(d=>d.setAttribute('opacity',0))};
+  svg.addEventListener('mousemove',move);svg.addEventListener('mouseleave',leave);
+  svg.addEventListener('touchstart',move,{passive:true});svg.addEventListener('touchmove',move,{passive:true});svg.addEventListener('touchend',leave);
+}
+const yKr=v=>kr(v,v%1&&Math.abs(v)<10?(v*10%1?2:1):0);
+
+// ---------- render ----------
+const $=id=>document.getElementById(id);
+function setView(v){if(v==='set'){openSettings();return}S.view=v;save();renderAll();window.scrollTo({top:0})}
+function setZone(z){S.zone=z;save();renderAll()}
+
+function renderNav(){
+  document.querySelectorAll('#viewNav button,#tabbar button').forEach(b=>{b.classList.toggle('on',b.dataset.v===S.view);b.onclick=()=>setView(b.dataset.v)});
+  const zn=$('zoneNav');zn.innerHTML='';
+  ['ALL',...ZONES].forEach(z=>{const b=document.createElement('button');
+    b.innerHTML=z==='ALL'?'Alla':`<span class="dot" style="background:${ZCOL[z]}"></span>${z}`;b.className=S.zone===z?'on':'';
+    b.onclick=()=>setZone(z);zn.appendChild(b)});
+  $('nowView').classList.toggle('hidden',S.view!=='now');
+  $('timeView').classList.toggle('hidden',S.view!=='time');
+}
+
+function zoneCards(host){
+  host.innerHTML=ZONES.map(z=>{const s=nowSlot(z),ts=todaySlots(z);
+    return `<button class="zc${S.zone===z?' on':''}" data-z="${z}" aria-pressed="${S.zone===z}">
+      <span class="l"><span class="sw" style="--c:${ZCOL[z]}"></span>${z} · ${ZNAME[z]}</span>
+      <div class="p num">${s?kr(adj(s.v)):'–'}<small> kr/kWh</small></div>
+      <span class="l">snitt idag ${ts.length?kr(adj(avgOf(ts.map(p=>p.v)))):'–'}</span></button>`}).join('');
+  host.querySelectorAll('.zc').forEach(b=>b.onclick=()=>setZone(S.zone===b.dataset.z?'ALL':b.dataset.z));
+}
+
+function renderNow(){
+  const fz=focusZone(),now=nowSlot(fz),ts=todaySlots(fz),lv=now&&level(fz,now.v);
+  $('nowDate').textContent=`${longDate(new Date())} · ${fz} ${ZNAME[fz]}${S.zone==='ALL'?' (min zon)':''}`;
+  if(now&&ts.length){
+    const b2=cheapest(fz,120),v=adj(now.v),bv=b2?adj(b2.avg):v,pct=Math.round((1-bv/v)*100);
+    const h1 = lv.k==='cheap'?'Billigt just nu.<br>Kör igång.':lv.k==='mid'?'Normalt pris.<br>Det kan vänta.':'Dyrt just nu.<br>Vänta om du kan.';
+    $('nowH1').innerHTML=h1;
+    $('nowLead').textContent = b2&&pct>=10
+      ? `Billigaste två timmarna börjar ${when(b2.start)}. Då kostar elen ${kr(bv)} kr/kWh, ${pct} % mindre än nu.`
+      : `Priset ligger nära dygnets lägsta. Tvätt, disk och laddning kostar ungefär lika mycket nu som senare.`;
+    const vals=ts.map(p=>p.v),mi=Math.min(...vals),ma=Math.max(...vals);
+    $('nowChips').innerHTML=`<span class="chip">Snitt idag ${kr(adj(avgOf(vals)))} kr</span><span class="chip">Lägst ${kr(adj(mi))} kl ${hm(ts[vals.indexOf(mi)].t)}</span><span class="chip y">◆ Högst ${kr(adj(ma))} kl ${hm(ts[vals.indexOf(ma)].t)}</span>`;
+    $('nowBig').innerHTML=`${kr(v)}<small>kr/kWh</small>`;
+    $('nowLvl').innerHTML=`<span class="lvl" style="--c:${lv.c}"><i></i>${lv.t} för idag</span>`;
+    $('nowSlot').textContent=`${hm(now.t)}–${hm(now.e)} · ${unitLabel()}`;
+  }else{$('nowH1').textContent='Inga priser just nu.';$('nowLead').textContent='';$('nowChips').innerHTML='';$('nowBig').textContent='–';$('nowLvl').innerHTML='';$('nowSlot').textContent=''}
+  // cream mini chart
+  const slots=live[fz]||[], ni=slots.findIndex(p=>p.t<=Date.now()&&Date.now()<p.e);
+  $('crTitle').textContent=slots.some(p=>ymd(p.t)!==today)?'Idag och i morgon · kr/kWh':'Idag · kr/kWh per kvart';
+  $('crZone').textContent=fz;
+  chart($('miniChart'),{bars:true,light:true,height:150,nowIdx:ni,series:[{key:fz,color:ZCOL[fz],data:slots.map(p=>adj(p.v))}],
+    xLabels:i=>{const h=hm(slots[i].t);return h==='00:00'&&i>0?'i morgon':h.slice(0,2)},yFmt:yKr,
+    tip:i=>`<span class="m">${ymd(slots[i].t)===today?'Idag':'I morgon'} ${hm(slots[i].t)}–${hm(slots[i].e)}</span><br><b>${kr(adj(slots[i].v))} kr/kWh</b>`});
+  zoneCards($('zgrid'));
+  // tiles
+  const one=S.zone!=='ALL',zs=one?[S.zone]:ZONES;
+  $('tiles').classList.toggle('one',one);
+  $('tilesSub').textContent=now?`kl ${hm(now.t)}–${hm(now.e)} · ${unitLabel()}`:'';
+  $('tiles').innerHTML=acts().map(a=>{
+    const b=one?cheapest(S.zone,a.min):null,n=one?nowSlot(S.zone):null;
+    const saving=b&&n?(adj(n.v)-adj(b.avg))*a.kwh:0;
+    return `<div class="g tile" role="button" tabindex="0" aria-label="${a.t}, visa elpris över tid">
+      <div class="th"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F26A2E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[a.id]}</svg></span>
+        <div><b>${a.t}</b><span class="l">${a.desc} · ${kr(a.kwh,a.kwh%1?1:0)} kWh</span></div></div>
+      <div class="tb"><div class="map">${mapSVG(one?S.zone:null)}</div>
+        <div class="rows">${zs.map(z=>{const s=nowSlot(z);return `<div class="rw"><span><span class="sw" style="--c:${ZCOL[z]}"></span>SE ${z.slice(2)}</span><span class="num">${s?fmtKr(adj(s.v)*a.kwh):'–'}</span></div>`}).join('')}</div></div>
+      ${b?`<div class="best">Billigast ${when(b.start)}–${hm(b.end)}: <b>${fmtKr(adj(b.avg)*a.kwh)}</b>${saving>=0.01?`<br><span class="save">spara ${fmtKr(saving)}</span>`:''}</div>`:''}
+    </div>`}).join('');
+  document.querySelectorAll('.tile').forEach(t=>{t.onclick=()=>setView('time');t.onkeydown=e=>{if(e.key==='Enter')setView('time')}});
+}
+
+function renderTime(){
+  const one=S.zone!=='ALL',zs=one?[S.zone]:ZONES,fz=focusZone();
+  $('tDate').textContent=`Över tid · ${one?fz+' '+ZNAME[fz]:'alla elområden'} · ${unitLabel()}`;
+  zoneCards($('zgrid2'));
+  const ref=live[zs[0]]||[],hasTom=ref.some(p=>ymd(p.t)!==today);
+  $('dayLabel').textContent=hasTom?'kr/kWh per kvart':'kr/kWh per kvart · morgondagen kommer ca 13:00';
+  const ni=ref.findIndex(p=>p.t<=Date.now()&&Date.now()<p.e);
+  const series=zs.map(z=>({key:z,color:ZCOL[z],data:(live[z]||[]).map(p=>adj(p.v))}));
+  chart($('dayChart'),{bars:one,height:250,nowIdx:ni,series,
+    xLabels:i=>{const h=hm(ref[i].t);return h==='00:00'&&i>0?'i morgon':h.slice(0,2)},yFmt:yKr,
+    tip:i=>`<span class="m">${ymd(ref[i].t)===today?'Idag':'I morgon'} ${hm(ref[i].t)}–${hm(ref[i].e)}</span><br>`+series.map(s=>`${one?'':`<span style="color:${s.color==='var(--z1)'?'#C9A68C':s.color}">●</span> ${s.key} `}<b>${s.data[i]==null?'–':kr(s.data[i])}</b> kr/kWh`).join('<br>')});
+  $('dayLegend').innerHTML=one?`<span style="display:flex;align-items:center;gap:8px">Billigast<span style="display:flex;gap:3px">${SCALE.map(c=>`<i style="background:${c};width:18px;height:10px;border-radius:3px;margin:0"></i>`).join('')}</span>Dyrast</span>`
+    :series.map(s=>`<span><i style="background:${s.color}"></i>${s.key} ${ZNAME[s.key]}</span>`).join('');
+  $('actsSec').classList.toggle('hidden',!one);
+  if(one){const n=nowSlot(S.zone);
+    $('acts').innerHTML=acts().map(a=>{const b=cheapest(S.zone,a.min);
+      return `<div class="g act"><div class="th"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F26A2E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[a.id]}</svg></span><b>${a.t}</b></div>
+        <div class="v num">${b?fmtKr(adj(b.avg)*a.kwh):'–'}</div>
+        <span class="l">${b?`${when(b.start)}–${hm(b.end)}`:''}${n?` · nu ${fmtKr(adj(n.v)*a.kwh)}`:''}</span></div>`}).join('')}
+  renderHistory();
+}
+
+const RANGES=[[7,'1 v'],[30,'1 mån'],[90,'3 mån'],[180,'6 mån'],[365,'1 år']];
+let histToken=0;
+async function renderHistory(){
+  const rn=$('rangeNav');rn.innerHTML='';
+  RANGES.forEach(([d,l])=>{const b=document.createElement('button');b.textContent=l;b.className=S.days===d?'on':'';b.onclick=()=>{S.days=d;save();renderHistory()};rn.appendChild(b)});
+  $('rangeSlider').value=S.days;$('rangeLabel').textContent=S.days+' dagar';
+  $('histMetric').innerHTML='<option value="kwh">Elpris, kr/kWh</option>'+acts().map(a=>`<option value="${a.id}">${a.t}, kr</option>`).join('');
+  $('histMetric').value=S.metric;
+  const tok=++histToken,one=S.zone!=='ALL',zs=one?[S.zone]:ZONES,fz=focusZone();
+  const dates=[];for(let i=S.days-1;i>=0;i--)dates.push(addDays(today,-i));
+  const zq=zs.includes(fz)?zs:[...zs,fz];
+  const tasks=zq.flatMap(z=>dates.map(d=>()=>daySum(z,d)));
+  const ld=$('histLoading'),need=tasks.length>40;if(need)ld.classList.remove('hidden');
+  const res=await pool(tasks,10,(d,t)=>{if(need)ld.querySelector('span').textContent=`Hämtar historik… ${Math.round(d/t*100)} %`});
+  if(tok!==histToken)return; ld.classList.add('hidden');
+  const per=Object.fromEntries(zq.map((z,k)=>[z,res.slice(k*dates.length,(k+1)*dates.length)]));
+  const act=acts().find(a=>a.id===S.metric),f=v=>v==null?null:adj(v)*(act?act.kwh:1),unit=act?' kr':' kr/kWh';
+  const series=zs.map(z=>({key:z,color:ZCOL[z],data:per[z].map(o=>o?f(o.a):null)}));
+  const band=one?{lo:per[fz].map(o=>o?f(o.mi):null),hi:per[fz].map(o=>o?f(o.ma):null)}:null;
+  chart($('histChart'),{height:280,series,band,xLabels:i=>dayShort(dates[i]),yFmt:v=>act?kr(v,v<10&&v%1?1:0):yKr(v),
+    tip:i=>`<span class="m">${dayLong(dates[i])} · dygnssnitt</span><br>`+series.map(s=>`${one?'':`<span style="color:${s.color==='var(--z1)'?'#C9A68C':s.color}">●</span> ${s.key} `}<b>${s.data[i]==null?'–':kr(s.data[i])}</b>${unit}`+(one&&per[fz][i]?`<br><span class="m">lägst ${kr(f(per[fz][i].mi))} · högst ${kr(f(per[fz][i].ma))}</span>`:'')).join('<br>')});
+  $('histLegend').innerHTML=series.map(s=>`<span><i style="background:${s.color}"></i>${s.key} dygnssnitt</span>`).join('')+(one?`<span><i style="background:#FFC08A;opacity:.45;height:10px"></i>dygnets lägsta–högsta</span>`:'');
+  const fv=per[fz].map(o=>o?f(o.a):null),vv=fv.filter(x=>x!=null),pavg=avgOf(vv),mi=Math.min(...vv),ma=Math.max(...vv);
+  if(one){
+    $('histStats').innerHTML=`<div><span class="l">Snitt ${S.days} dagar</span><div class="v num">${kr(pavg)}<small>${unit}</small></div></div>
+      <div><span class="l">Billigaste dygnet · ${dayShort(dates[fv.indexOf(mi)])}</span><div class="v num">${kr(mi)}<small>${unit}</small></div></div>
+      <div><span class="l">Dyraste dygnet · ${dayShort(dates[fv.indexOf(ma)])}</span><div class="v num">${kr(ma)}<small>${unit}</small></div></div>`;
+    $('histStats').style.gridTemplateColumns='repeat(3,minmax(0,1fr))';
+  }else{
+    $('histStats').innerHTML=series.map(s=>{const v=s.data.filter(x=>x!=null);return `<div><span class="l"><span class="sw" style="--c:${s.color}"></span>${s.key} snitt</span><div class="v num">${kr(avgOf(v))}<small>${unit}</small></div></div>`}).join('');
+    $('histStats').style.gridTemplateColumns='repeat(4,minmax(0,1fr))';
+  }
+  // headline (answer first) for focus zone, always in kr/kWh
+  const tv=todaySlots(fz).map(p=>p.v); const kwh=per[fz].map(o=>o?adj(o.a):null).filter(x=>x!=null);
+  if(tv.length&&kwh.length){
+    const td=adj(avgOf(tv)),pa=avgOf(kwh),r=td/pa;
+    $('tH1').innerHTML=r>1.15?'Dyrare än<br>vanligt idag.':r<0.85?'Billigare än<br>vanligt idag.':'Ungefär som<br>vanligt idag.';
+    $('tLead').textContent=`${fz} kostar i snitt ${kr(td)} kr/kWh idag, mot ${kr(pa)} kr/kWh de senaste ${S.days} dagarna.`;
+    const pct=Math.round((r-1)*100);
+    $('tChips').innerHTML=`<span class="chip${pct>15?' y':''}">${pct>=0?'+':''}${pct} % mot snittet</span><span class="chip">Lägsta dygn ${kr(Math.min(...kwh))} kr</span><span class="chip">Högsta dygn ${kr(Math.max(...kwh))} kr</span>`;
+  }
+}
+$('rangeSlider').addEventListener('input',e=>$('rangeLabel').textContent=e.target.value+' dagar');
+$('rangeSlider').addEventListener('change',e=>{S.days=+e.target.value;save();renderHistory()});
+$('histMetric').addEventListener('change',e=>{S.metric=e.target.value;save();renderHistory()});
+
+function renderAll(){
+  renderNav();
+  if(S.view==='now')renderNow();else renderTime();
+  $('modeNote').textContent=S.mode==='total'
+    ?`Totalpris = spot × 1,25 + påslag ${S.paslag} + energiskatt ${S.skatt} + elnät ${S.nat} öre/kWh. Fasta avgifter ingår inte.`
+    :S.mode==='moms'?'Spotpris inkl. 25 % moms. Nätavgift, energiskatt och påslag ingår inte, välj Totalpris under inställningar.'
+    :'Rent spotpris exkl. moms, skatter och avgifter.';
+}
+
+// settings
+function openSettings(){
+  $('cHome').value=S.home;$('cMode').value=S.mode;$('cPaslag').value=S.paslag;$('cSkatt').value=S.skatt;$('cNat').value=S.nat;
+  $('actFields').innerHTML=acts().map(a=>`<div class="fld"><label for="k_${a.id}">${a.t}<small>${a.desc}</small></label><input id="k_${a.id}" type="number" step="0.1" inputmode="decimal" data-act="${a.id}" value="${a.kwh}"></div>`).join('');
+  document.querySelectorAll('.tot').forEach(e=>e.style.opacity=S.mode==='total'?1:.45);$('dlg').showModal()}
+$('setBtn').onclick=openSettings;
+$('cMode').onchange=e=>document.querySelectorAll('.tot').forEach(x=>x.style.opacity=e.target.value==='total'?1:.45);
+$('dlg').addEventListener('close',()=>{
+  S.home=$('cHome').value;S.mode=$('cMode').value;S.paslag=+$('cPaslag').value||0;S.skatt=+$('cSkatt').value||0;S.nat=+$('cNat').value||0;
+  document.querySelectorAll('[data-act]').forEach(i=>{const v=parseFloat(i.value);if(!isNaN(v))S.acts[i.dataset.act]=v});
+  save();renderAll()});
+
+let lastW=innerWidth;
+addEventListener('resize',()=>{if(Math.abs(innerWidth-lastW)<20)return;lastW=innerWidth;clearTimeout(window._rt);window._rt=setTimeout(renderAll,150)});
+async function refresh(){await loadLive();renderAll()}
+renderNav(); refresh();
+setInterval(refresh,5*60*1000);
+setInterval(()=>{if(S.view==='now')renderNow()},60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
+})();
+</script>
+</body>
+</html>
