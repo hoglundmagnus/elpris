@@ -692,13 +692,14 @@ $('histMetric').addEventListener('change',e=>{S.metric=e.target.value;save();ren
 function renderAll(){
   renderNav();
   if(S.view==='now')renderNow();else if(S.view==='time')renderTime();else renderProd();
-  if(S.view==='prod'){
-    $('foot').innerHTML=`Produktion idag från <a href="https://www.svk.se/om-kraftsystemet/kontrollrummet/" target="_blank" rel="noopener">Svenska kraftnät</a>. Historik från <a href="https://energy-charts.info" target="_blank" rel="noopener">Energy-Charts</a> (Fraunhofer ISE, CC BY 4.0).<br>Reaktorstatus från <a href="https://umm.nordpoolgroup.com" target="_blank" rel="noopener">Nord Pool UMM</a>. Hämtas ungefär var 15:e minut${P.data?`, senast ${hm(new Date(P.data.updated))}`:''}.`;
-    return}
+  if(S.view==='prod'){prodFoot();return}
   $('foot').innerHTML=`Spotpriser från <a href="https://www.elprisetjustnu.se" target="_blank" rel="noopener">elprisetjustnu.se</a>, uppdateras var 5:e minut.<br>`+(S.mode==='total'
     ?`Totalpris = spot × 1,25 + påslag ${S.paslag} + energiskatt ${S.skatt} + elnät ${S.nat} öre/kWh. Fasta avgifter ingår inte.`
     :S.mode==='moms'?'Spotpris inkl. 25 % moms. Nätavgift, energiskatt och påslag ingår inte, välj Totalpris under inställningar.'
     :'Rent spotpris exkl. moms, skatter och avgifter.');
+}
+function prodFoot(){
+    $('foot').innerHTML=`Produktion idag från <a href="https://www.svk.se/om-kraftsystemet/kontrollrummet/" target="_blank" rel="noopener">Svenska kraftnät</a>. Historik från <a href="https://energy-charts.info" target="_blank" rel="noopener">Energy-Charts</a> (Fraunhofer ISE, CC BY 4.0).<br>Reaktorstatus från <a href="https://umm.nordpoolgroup.com" target="_blank" rel="noopener">Nord Pool UMM</a>. Hämtas ungefär var 15:e minut${P.data?`, senast ${hm(new Date(P.data.updated))}`:''}.`;
 }
 
 // ---------- produktion ----------
@@ -767,6 +768,7 @@ const tipRows=(vals,tot)=>PT.filter(p=>vals[p.k]!=null&&(vals[p.k]>=1||p.k!=='so
 async function renderProd(){
   await loadProd();
   if(S.view!=='prod')return;
+  prodFoot();
   const D=P.data;
   if(!D){$('pH1').textContent='Kunde inte hämta produktionen.';$('pLead').textContent='Försök igen om en stund.';return}
   const T=D.today||{t:[]},li=lastIdx(T);
