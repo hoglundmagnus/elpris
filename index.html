@@ -125,7 +125,7 @@ h2{margin:0;font:500 26px 'Inter Tight';letter-spacing:-.02em}
 .stats .v{font:300 34px/1.1 'Inter Tight';letter-spacing:-.03em}
 .stats .v small{font-size:13px;font-weight:500;color:var(--label)}
 .ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-select,input[type=number]{font:inherit;color:var(--dark);background:var(--cream);border:0;border-radius:999px;padding:9px 14px;min-height:40px}
+select,input[type=number],input:not([type]){font:inherit;color:var(--dark);background:var(--cream);border:0;border-radius:999px;padding:9px 14px;min-height:40px}
 .range{display:flex;align-items:center;gap:12px;margin-top:16px;font-size:13px;color:var(--label)}
 .range input{flex:1;accent-color:#FF9A52}
 .loading{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--label)}
@@ -192,7 +192,18 @@ dialog::backdrop{background:rgba(42,18,8,.45);backdrop-filter:blur(6px)}
 .fld label{font-size:15px}
 .fld label small{display:block;font-size:12.5px;color:var(--brown)}
 .fld input,.fld select{width:100%;background:#F4E9E1}
-.dlg h4{margin:18px 0 2px;font:500 18px 'Inter Tight'}
+.dlg h4{margin:22px 0 2px;font:500 18px 'Inter Tight'}
+.dlg .grp{margin:14px 0 0;font:600 12px 'Inter Tight';letter-spacing:.06em;text-transform:uppercase;color:var(--brown)}
+.dlg .note{font-size:13px;color:var(--brown);margin:6px 0 2px;line-height:1.45}
+.dlg .note:empty{display:none}
+.dlg .note a{color:#B4461C}
+.fld:has(.mini){grid-template-columns:1fr 200px}
+.mini{display:flex;gap:6px;align-items:center}
+.mini select{padding:9px 8px;min-width:0;flex:1}
+.intro{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;padding:14px 18px}
+.intro p{margin:0;flex:1;min-width:220px;font-size:14.5px}
+.intro .cta{min-height:42px;padding:0 20px;font-size:15px}
+.intro .x{border:0;background:transparent;color:var(--label);font-size:14px;min-height:42px}
 .cta{border:0;background:var(--cta);color:#fff;font:600 16px 'Inter Tight';min-height:50px;padding:0 28px;border-radius:999px;box-shadow:0 8px 20px -8px rgba(160,40,0,.8)}
 
 @media (max-width:1180px){
@@ -254,6 +265,7 @@ dialog::backdrop{background:rgba(42,18,8,.45);backdrop-filter:blur(6px)}
 
   <!-- ============ JUST NU ============ -->
   <main id="nowView">
+    <div class="g intro hidden" id="intro"><p><b>Se ditt riktiga elpris.</b> Välj kommun så fylls elområde, nätbolag och energiskatt i automatiskt.</p><button class="cta" id="introBtn">Välj kommun</button><button class="x" id="introX">Inte nu</button></div>
     <div class="hero">
       <div>
         <div class="l" id="nowDate"></div>
@@ -392,13 +404,47 @@ dialog::backdrop{background:rgba(42,18,8,.45);backdrop-filter:blur(6px)}
 <dialog id="dlg">
   <form method="dialog" class="dlg">
     <h3>Inställningar</h3>
-    <div class="sub">Sparas på den här enheten.</div>
-    <div class="fld"><label for="cHome">Min zon<small>Används i rubriken när du visar alla</small></label><select id="cHome"><option>SE1</option><option>SE2</option><option>SE3</option><option>SE4</option></select></div>
-    <div class="fld"><label for="cMode">Prisvisning<small>Vad räknas in i priset?</small></label>
+    <div class="sub">Sparas på den här enheten. Alla priser inkl. moms.</div>
+
+    <h4>Var bor du?</h4>
+    <div class="fld"><label for="cKm">Kommun<small>Fyller i elområde, nätbolag och energiskatt</small></label><input id="cKm" list="kmList" placeholder="Skriv kommun" autocomplete="off"><datalist id="kmList"></datalist></div>
+    <div class="fld"><label for="cNet">Elnätsbolag</label><select id="cNet"><option value="">Välj kommun först</option></select></div>
+    <div class="fld"><label for="cBostad">Bostad</label><select id="cBostad"><option value="apartment">Lägenhet</option><option value="house">Villa</option></select></div>
+    <div class="fld"><label for="cHome">Elområde<small>Rubriken använder det när du visar alla</small></label><select id="cHome"><option>SE1</option><option>SE2</option><option>SE3</option><option>SE4</option></select></div>
+    <div class="note" id="kmInfo"></div>
+
+    <h4>Prisvisning</h4>
+    <div class="fld"><label for="cMode">Vad räknas in i priset?</label>
       <select id="cMode"><option value="spot">Spotpris exkl. moms</option><option value="moms">Spotpris inkl. moms</option><option value="total">Totalpris</option></select></div>
-    <div class="fld tot"><label for="cPaslag">Elhandlarens påslag<small>öre/kWh inkl. moms</small></label><input id="cPaslag" type="number" step="0.1" inputmode="decimal"></div>
-    <div class="fld tot"><label for="cSkatt">Energiskatt<small>öre/kWh inkl. moms (2026: 45)</small></label><input id="cSkatt" type="number" step="0.1" inputmode="decimal"></div>
-    <div class="fld tot"><label for="cNat">Elnät, överföring<small>öre/kWh inkl. moms</small></label><input id="cNat" type="number" step="0.1" inputmode="decimal"></div>
+
+    <div class="tot">
+    <h4>Mitt elavtal</h4>
+    <div class="note">Finns på din elnätsfaktura eller i nätbolagets prislista. Tomma fält går bra.</div>
+    <div class="grp">Elhandel</div>
+    <div class="fld"><label for="cPaslag">Påslag<small>öre/kWh</small></label><input id="cPaslag" type="number" step="0.1" inputmode="decimal"></div>
+    <div class="fld"><label for="cHandelFast">Fast avgift<small>kr/månad</small></label><input id="cHandelFast" type="number" step="1" inputmode="decimal"></div>
+    <div class="grp">Elnät</div>
+    <div class="fld"><label for="cNatFast">Fast avgift<small>kr/år, t.ex. säkringsavgift</small></label><input id="cNatFast" type="number" step="1" inputmode="decimal" data-net></div>
+    <div class="fld"><label for="cTou">Överföringsavgift</label><select id="cTou" data-net><option value="0">Samma pris hela dygnet</option><option value="1">Hög-/låglast</option></select></div>
+    <div class="fld" id="fNat"><label for="cNat">Överföring<small id="natHint">öre/kWh</small></label><input id="cNat" type="number" step="0.1" inputmode="decimal" data-net></div>
+    <div id="fTou">
+      <div class="fld"><label for="cNatHog">Höglast<small>öre/kWh</small></label><input id="cNatHog" type="number" step="0.1" inputmode="decimal" data-net></div>
+      <div class="fld"><label for="cNatLag">Låglast<small>öre/kWh</small></label><input id="cNatLag" type="number" step="0.1" inputmode="decimal" data-net></div>
+      <div class="fld"><label>Höglasttid<small>Vanligast: vardagar 6–22, nov–mars</small></label>
+        <div class="mini"><select id="cHogFrom" aria-label="Från timme"></select><span>–</span><select id="cHogTo" aria-label="Till timme"></select></div></div>
+      <div class="fld"><label>Under</label>
+        <div class="mini"><select id="cHogM1" aria-label="Från månad"></select><span>–</span><select id="cHogM2" aria-label="Till månad"></select></div></div>
+      <div class="fld"><label for="cHogDays">Dagar</label><select id="cHogDays"><option value="weekdays">Vardagar</option><option value="all">Alla dagar</option></select></div>
+    </div>
+    <div class="fld"><label for="cEffekt">Effektavgift<small>kr/kW per månad, valfritt</small></label><input id="cEffekt" type="number" step="0.1" inputmode="decimal"></div>
+    <div class="grp">Skatt</div>
+    <div class="fld"><label for="cSkatt">Energiskatt<small id="skattHint">öre/kWh (2026: 45, sänkt i norr: 33)</small></label><input id="cSkatt" type="number" step="0.1" inputmode="decimal"></div>
+    <div class="grp">Fasta avgifter</div>
+    <div class="fld"><label for="cSpread">Slå ut per kWh<small>Annars visas de som kr per dag</small></label><select id="cSpread"><option value="0">Nej, visa separat</option><option value="1">Ja</option></select></div>
+    <div class="fld" id="fArs"><label for="cArs">Årsförbrukning<small>kWh per år</small></label><input id="cArs" type="number" step="100" inputmode="numeric"></div>
+    <div class="note" id="fixNote"></div>
+    </div>
+
     <h4>Förbrukning, kWh</h4>
     <div id="actFields"></div>
     <div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="cta" value="ok">Spara</button></div>
@@ -423,7 +469,9 @@ const DEFAULT_ACTS=[
   {id:'wash',t:'Tvätta',kwh:0.9,min:120,desc:'40 °C-program'},
   {id:'dish',t:'Diska',kwh:1.1,min:120,desc:'Normalprogram'},
 ];
-const DEFAULTS={view:'now',zone:'ALL',home:'SE3',mode:'moms',paslag:5,skatt:45,nat:30,days:30,pdays:30,metric:'kwh',acts:{}};
+const DEFAULTS={view:'now',zone:'ALL',home:'SE3',mode:'moms',paslag:5,skatt:45,nat:30,days:30,pdays:30,metric:'kwh',acts:{},
+  km:null,netCo:null,bostad:'house',natEst:true,natFast:0,handelFast:0,tou:false,natHog:60,natLag:20,
+  hogM1:11,hogM2:3,hogDays:'weekdays',hogFrom:6,hogTo:22,effekt:0,arsKwh:0,spread:false,intro:false};
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
 const S=Object.assign({},DEFAULTS,store.get('ep:settings',{}));
 if(!['now','time','prod'].includes(S.view))S.view='now';
@@ -439,8 +487,25 @@ const addDays=(s,n)=>{const[y,m,d]=s.split('-').map(Number);return new Date(Date
 const dayShort=s=>new Intl.DateTimeFormat('sv-SE',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z'));
 const dayLong=s=>new Intl.DateTimeFormat('sv-SE',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z'));
 
-const unitLabel=()=>S.mode==='spot'?'exkl. moms':S.mode==='moms'?'inkl. moms':'totalpris';
-const adj=spot=>S.mode==='spot'?spot:S.mode==='moms'?spot*1.25:spot*1.25+(+S.paslag + +S.skatt + +S.nat)/100;
+const unitLabel=()=>S.mode==='spot'?'exkl. moms':S.mode==='moms'?'inkl. moms':S.spread&&S.arsKwh>0?'totalpris inkl. fasta avgifter':'totalpris';
+const touOn=()=>S.mode==='total'&&S.tou;
+const hogShade=sl=>touOn()?sl.map(p=>isHog(p.t)):null;
+// ----- elnät: höglast/låglast -----
+const partsFmt=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,month:'numeric',weekday:'short',hour:'numeric',hourCycle:'h23'});
+const inMonths=m=>{const a=+S.hogM1,b=+S.hogM2;return a<=b?m>=a&&m<=b:m>=a||m<=b};
+const isHogParts=(m,wd,h)=>inMonths(m)&&(S.hogDays==='all'||(wd>=1&&wd<=5))&&h>=+S.hogFrom&&h<+S.hogTo;
+const WD={Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7};
+function isHog(t){const o={};partsFmt.formatToParts(new Date(t)).forEach(x=>o[x.type]=x.value);return isHogParts(+o.month,WD[o.weekday],+o.hour)}
+function transferOre(t){ // öre/kWh inkl. moms
+  if(!S.tou)return +S.nat;
+  if(typeof t==='string'){ // dygnssnitt för ett datum
+    const d=new Date(t+'T12:00:00Z'),m=d.getUTCMonth()+1,wd=d.getUTCDay()||7;let h=0;
+    for(let k=0;k<24;k++)if(isHogParts(m,wd,k))h++;return (h*S.natHog+(24-h)*S.natLag)/24}
+  return isHog(t)?+S.natHog:+S.natLag}
+const fixedYear=()=>(+S.natFast||0)+(+S.handelFast||0)*12;
+const spreadOre=()=>S.spread&&S.arsKwh>0?fixedYear()*100/S.arsKwh:0;
+const adj=(spot,t)=>S.mode==='spot'?spot:S.mode==='moms'?spot*1.25:spot*1.25+(+S.paslag + +S.skatt + transferOre(t) + spreadOre())/100;
+const pr=p=>adj(p.v,p.t);
 const kr=(v,dec=2)=>v.toLocaleString('sv-SE',{minimumFractionDigits:dec,maximumFractionDigits:dec});
 const fmtKr=v=>kr(v)+' kr';
 
@@ -477,12 +542,12 @@ const nowSlot=z=>{const n=Date.now();return(live[z]||[]).find(p=>p.t<=n&&n<p.e)}
 const todaySlots=z=>(live[z]||[]).filter(p=>ymd(p.t)===today);
 const futureSlots=z=>{const n=Date.now();return(live[z]||[]).filter(p=>p.e>n)};
 const avgOf=a=>a.reduce((x,y)=>x+y,0)/(a.length||1);
-function level(z,v){const ts=todaySlots(z).map(p=>p.v).sort((a,b)=>a-b);if(!ts.length)return null;
+function level(z,v){const ts=todaySlots(z).map(pr).sort((a,b)=>a-b);if(!ts.length)return null;
   const q1=ts[Math.floor(ts.length*.33)],q2=ts[Math.floor(ts.length*.66)];
   return v<=q1?{k:'cheap',t:'Billigt',c:'var(--good)'}:v<=q2?{k:'mid',t:'Normalt',c:'var(--watch)'}:{k:'dear',t:'Dyrt',c:'var(--bad)'}}
 function cheapest(z,minutes){const s=futureSlots(z);if(!s.length)return null;
   const sm=(s[0].e-s[0].t)/60000,n=Math.max(1,Math.round(minutes/sm));let best=null;
-  for(let i=0;i+n<=s.length;i++){if(s[i+n-1].e-s[i].t!==n*sm*60000)continue;let a=0;for(let j=i;j<i+n;j++)a+=s[j].v;a/=n;if(!best||a<best.avg)best={avg:a,start:s[i].t,end:s[i+n-1].e}}
+  for(let i=0;i+n<=s.length;i++){if(s[i+n-1].e-s[i].t!==n*sm*60000)continue;let a=0;for(let j=i;j<i+n;j++)a+=pr(s[j]);a/=n;if(!best||a<best.avg)best={avg:a,start:s[i].t,end:s[i+n-1].e}}
   return best}
 const when=d=>(ymd(d)===today?'':'i morgon ')+'kl '+hm(d);
 
@@ -507,7 +572,7 @@ function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(co
 function niceTicks(min,max,count=4){if(min===max)max=min+1;const span=max-min,step0=span/count,mag=Math.pow(10,Math.floor(Math.log10(step0)));
   const step=[1,2,2.5,5,10].map(m=>m*mag).find(s=>span/s<=count)||mag*10;const t=[],top=Math.ceil(max/step-1e-9)*step;
   for(let v=Math.floor(min/step)*step;v<=top+step*.001;v+=step)t.push(+v.toFixed(10));return t}
-function chart(host,{series,band,height=220,bars=false,xLabels,tip,nowIdx,yFmt,light=false,axis=true}){
+function chart(host,{series,band,height=220,bars=false,xLabels,tip,nowIdx,yFmt,light=false,axis=true,shade}){
   host.innerHTML='';
   const txt=light?'#8A4A30':'#F9DCCB', grid=light?'rgba(42,18,8,.1)':'rgba(255,255,255,.12)', now=light?'#2A1208':'#FFF7F2';
   const W=host.clientWidth||600,H=height,P={l:axis?40:4,r:6,t:8,b:axis?24:20};
@@ -522,6 +587,9 @@ function chart(host,{series,band,height=220,bars=false,xLabels,tip,nowIdx,yFmt,l
   const y=v=>P.t+(hi-v)/(hi-lo)*(H-P.t-P.b);
   ticks.forEach(t=>{el('line',{x1:P.l,x2:W-P.r,y1:y(t),y2:y(t),stroke:grid},svg);
     if(axis){const tx=el('text',{x:P.l-8,y:y(t)+4,'text-anchor':'end',fill:txt,'font-size':11,'font-family':'Inter Tight'},svg);tx.textContent=yFmt(t)}});
+  if(shade){const cw=(W-P.l-P.r)/(bars?n:Math.max(1,n-1));let i=0;
+    while(i<n){while(i<n&&!shade[i])i++;const s0=i;while(i<n&&shade[i])i++;if(i>s0){const x0=bars?P.l+s0*cw:x(s0)-cw/2,x1=bars?P.l+i*cw:x(i-1)+cw/2;
+      el('rect',{x:Math.max(P.l,x0),y:P.t,width:Math.min(W-P.r,x1)-Math.max(P.l,x0),height:H-P.t-P.b,fill:light?'rgba(176,24,62,.07)':'rgba(255,255,255,.07)'},svg)}}}
   const step=Math.ceil(n/Math.max(2,Math.floor((W-P.l)/72)));
   for(let i=0;i<n;i+=step){const tx=el('text',{x:x(i),y:H-5,'text-anchor':'middle',fill:txt,'font-size':11,'font-family':'Inter Tight'},svg);tx.textContent=xLabels(i)}
   if(band){let d='';band.hi.forEach((v,i)=>{if(v!=null)d+=(d?'L':'M')+x(i)+' '+y(v)});
@@ -575,34 +643,42 @@ function zoneCards(host){
   host.innerHTML=ZONES.map(z=>{const s=nowSlot(z),ts=todaySlots(z);
     return `<button class="zc${S.zone===z?' on':''}" data-z="${z}" aria-pressed="${S.zone===z}">
       <span class="l"><span class="sw" style="--c:${ZCOL[z]}"></span>${z} · ${ZNAME[z]}</span>
-      <div class="p num">${s?kr(adj(s.v)):'–'}<small> kr/kWh</small></div>
-      <span class="l">snitt idag ${ts.length?kr(adj(avgOf(ts.map(p=>p.v)))):'–'}</span></button>`}).join('');
+      <div class="p num">${s?kr(pr(s)):'–'}<small> kr/kWh</small></div>
+      <span class="l">snitt idag ${ts.length?kr(avgOf(ts.map(pr))):'–'}</span></button>`}).join('');
   host.querySelectorAll('.zc').forEach(b=>b.onclick=()=>setZone(S.zone===b.dataset.z?'ALL':b.dataset.z));
 }
 
+function extraChips(now){let h='';if(S.mode!=='total')return h;
+  const fy=fixedYear();
+  if(fy&&!(S.spread&&S.arsKwh>0))h+=`<span class="chip">+ fasta avgifter ${kr(fy/365)} kr/dag</span>`;
+  if(S.effekt>0&&touOn()&&isHog(now.t))h+=`<span class="chip y">◆ Höglast: undvik effekttoppar</span>`;
+  else if(S.effekt>0)h+=`<span class="chip">Effektavgift: sprid ut tunga apparater</span>`;
+  if(S.natEst&&S.km)h+=`<span class="chip">Elnät uppskattat</span>`;
+  return h}
 function renderNow(){
-  const fz=focusZone(),now=nowSlot(fz),ts=todaySlots(fz),lv=now&&level(fz,now.v);
-  $('nowDate').textContent=`${longDate(new Date())} · ${fz} ${ZNAME[fz]}${S.zone==='ALL'?' (min zon)':''}`;
+  const fz=focusZone(),now=nowSlot(fz),ts=todaySlots(fz),lv=now&&level(fz,pr(now));
+  $('nowDate').textContent=`${longDate(new Date())} · ${fz} ${S.km&&fz===S.home?S.km.name:ZNAME[fz]}${S.zone==='ALL'?' (min zon)':''}`;
+  $('intro').classList.toggle('hidden',!!S.km||S.intro);
   if(now&&ts.length){
-    const b2=cheapest(fz,120),v=adj(now.v),bv=b2?adj(b2.avg):v,pct=Math.round((1-bv/v)*100);
+    const b2=cheapest(fz,120),v=pr(now),bv=b2?b2.avg:v,pct=Math.round((1-bv/v)*100);
     const h1 = lv.k==='cheap'?'Billigt just nu.<br>Kör igång.':lv.k==='mid'?'Normalt pris.<br>Det kan vänta.':'Dyrt just nu.<br>Vänta om du kan.';
     $('nowH1').innerHTML=h1;
     $('nowLead').textContent = b2&&pct>=10
       ? `Billigaste två timmarna börjar ${when(b2.start)}. Då kostar elen ${kr(bv)} kr/kWh, ${pct} % mindre än nu.`
       : `Priset ligger nära dygnets lägsta. Tvätt, disk och laddning kostar ungefär lika mycket nu som senare.`;
-    const vals=ts.map(p=>p.v),mi=Math.min(...vals),ma=Math.max(...vals);
-    $('nowChips').innerHTML=`<span class="chip">Snitt idag ${kr(adj(avgOf(vals)))} kr</span><span class="chip">Lägst ${kr(adj(mi))} kl ${hm(ts[vals.indexOf(mi)].t)}</span><span class="chip y">◆ Högst ${kr(adj(ma))} kl ${hm(ts[vals.indexOf(ma)].t)}</span>`;
+    const vals=ts.map(pr),mi=Math.min(...vals),ma=Math.max(...vals);
+    $('nowChips').innerHTML=`<span class="chip">Snitt idag ${kr(avgOf(vals))} kr</span><span class="chip">Lägst ${kr(mi)} kl ${hm(ts[vals.indexOf(mi)].t)}</span><span class="chip y">◆ Högst ${kr(ma)} kl ${hm(ts[vals.indexOf(ma)].t)}</span>`+extraChips(now);
     $('nowBig').innerHTML=`${kr(v)}<small>kr/kWh</small>`;
     $('nowLvl').innerHTML=`<span class="lvl" style="--c:${lv.c}"><i></i>${lv.t} för idag</span>`;
-    $('nowSlot').textContent=`${hm(now.t)}–${hm(now.e)} · ${unitLabel()}`;
+    $('nowSlot').textContent=`${hm(now.t)}–${hm(now.e)} · ${unitLabel()}${touOn()?(isHog(now.t)?' · höglast':' · låglast'):''}`;
   }else{$('nowH1').textContent='Inga priser just nu.';$('nowLead').textContent='';$('nowChips').innerHTML='';$('nowBig').textContent='–';$('nowLvl').innerHTML='';$('nowSlot').textContent=''}
   // cream mini chart
   const slots=live[fz]||[], ni=slots.findIndex(p=>p.t<=Date.now()&&Date.now()<p.e);
   $('crTitle').textContent=slots.some(p=>ymd(p.t)!==today)?'Idag och i morgon · kr/kWh':'Idag · kr/kWh per kvart';
   $('crZone').textContent=fz;
-  chart($('miniChart'),{bars:true,light:true,height:150,nowIdx:ni,series:[{key:fz,color:ZCOL[fz],data:slots.map(p=>adj(p.v))}],
+  chart($('miniChart'),{bars:true,light:true,height:150,nowIdx:ni,shade:hogShade(slots),series:[{key:fz,color:ZCOL[fz],data:slots.map(pr)}],
     xLabels:i=>{const h=hm(slots[i].t);return h==='00:00'&&i>0?'i morgon':h.slice(0,2)},yFmt:yKr,
-    tip:i=>`<span class="m">${ymd(slots[i].t)===today?'Idag':'I morgon'} ${hm(slots[i].t)}–${hm(slots[i].e)}</span><br><b>${kr(adj(slots[i].v))} kr/kWh</b>`});
+    tip:i=>`<span class="m">${ymd(slots[i].t)===today?'Idag':'I morgon'} ${hm(slots[i].t)}–${hm(slots[i].e)}</span><br><b>${kr(pr(slots[i]))} kr/kWh</b>`});
   zoneCards($('zgrid'));
   // tiles
   const one=S.zone!=='ALL',zs=one?[S.zone]:ZONES;
@@ -610,13 +686,13 @@ function renderNow(){
   $('tilesSub').textContent=now?`kl ${hm(now.t)}–${hm(now.e)} · ${unitLabel()}`:'';
   $('tiles').innerHTML=acts().map(a=>{
     const b=one?cheapest(S.zone,a.min):null,n=one?nowSlot(S.zone):null;
-    const saving=b&&n?(adj(n.v)-adj(b.avg))*a.kwh:0;
+    const saving=b&&n?(pr(n)-b.avg)*a.kwh:0;
     return `<div class="g tile" role="button" tabindex="0" aria-label="${a.t}, visa elpris över tid">
       <div class="th"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F26A2E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[a.id]}</svg></span>
         <div><b>${a.t}</b><span class="l">${a.desc} · ${kr(a.kwh,a.kwh%1?1:0)} kWh</span></div></div>
       <div class="tb"><div class="map">${mapSVG(one?S.zone:null)}</div>
-        <div class="rows">${zs.map(z=>{const s=nowSlot(z);return `<div class="rw"><span><span class="sw" style="--c:${ZCOL[z]}"></span>SE ${z.slice(2)}</span><span class="num">${s?fmtKr(adj(s.v)*a.kwh):'–'}</span></div>`}).join('')}</div></div>
-      ${b?`<div class="best">Billigast ${when(b.start)}–${hm(b.end)}: <b>${fmtKr(adj(b.avg)*a.kwh)}</b>${saving>=0.01?`<br><span class="save">spara ${fmtKr(saving)}</span>`:''}</div>`:''}
+        <div class="rows">${zs.map(z=>{const s=nowSlot(z);return `<div class="rw"><span><span class="sw" style="--c:${ZCOL[z]}"></span>SE ${z.slice(2)}</span><span class="num">${s?fmtKr(pr(s)*a.kwh):'–'}</span></div>`}).join('')}</div></div>
+      ${b?`<div class="best">Billigast ${when(b.start)}–${hm(b.end)}: <b>${fmtKr(b.avg*a.kwh)}</b>${saving>=0.01?`<br><span class="save">spara ${fmtKr(saving)}</span>`:''}</div>`:''}
     </div>`}).join('');
   document.querySelectorAll('.tile').forEach(t=>{t.onclick=()=>setView('time');t.onkeydown=e=>{if(e.key==='Enter')setView('time')}});
 }
@@ -628,18 +704,19 @@ function renderTime(){
   const ref=live[zs[0]]||[],hasTom=ref.some(p=>ymd(p.t)!==today);
   $('dayLabel').textContent=hasTom?'kr/kWh per kvart':'kr/kWh per kvart · morgondagen kommer ca 13:00';
   const ni=ref.findIndex(p=>p.t<=Date.now()&&Date.now()<p.e);
-  const series=zs.map(z=>({key:z,color:ZCOL[z],data:(live[z]||[]).map(p=>adj(p.v))}));
-  chart($('dayChart'),{bars:one,height:250,nowIdx:ni,series,
+  const series=zs.map(z=>({key:z,color:ZCOL[z],data:(live[z]||[]).map(pr)}));
+  chart($('dayChart'),{bars:one,height:250,nowIdx:ni,series,shade:hogShade(ref),
     xLabels:i=>{const h=hm(ref[i].t);return h==='00:00'&&i>0?'i morgon':h.slice(0,2)},yFmt:yKr,
     tip:i=>`<span class="m">${ymd(ref[i].t)===today?'Idag':'I morgon'} ${hm(ref[i].t)}–${hm(ref[i].e)}</span><br>`+series.map(s=>`${one?'':`<span style="color:${s.color==='var(--z1)'?'#C9A68C':s.color}">●</span> ${s.key} `}<b>${s.data[i]==null?'–':kr(s.data[i])}</b> kr/kWh`).join('<br>')});
   $('dayLegend').innerHTML=one?`<span style="display:flex;align-items:center;gap:8px">Billigast<span style="display:flex;gap:3px">${SCALE.map(c=>`<i style="background:${c};width:18px;height:10px;border-radius:3px;margin:0"></i>`).join('')}</span>Dyrast</span>`
     :series.map(s=>`<span><i style="background:${s.color}"></i>${s.key} ${ZNAME[s.key]}</span>`).join('');
+  if(touOn())$('dayLegend').innerHTML+=`<span><i style="background:rgba(255,255,255,.18);height:10px"></i>Höglasttid, ${kr(S.natHog,0)} öre överföring mot ${kr(S.natLag,0)}</span>`;
   $('actsSec').classList.toggle('hidden',!one);
   if(one){const n=nowSlot(S.zone);
     $('acts').innerHTML=acts().map(a=>{const b=cheapest(S.zone,a.min);
       return `<div class="g act"><div class="th"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F26A2E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[a.id]}</svg></span><b>${a.t}</b></div>
-        <div class="v num">${b?fmtKr(adj(b.avg)*a.kwh):'–'}</div>
-        <span class="l">${b?`${when(b.start)}–${hm(b.end)}`:''}${n?` · nu ${fmtKr(adj(n.v)*a.kwh)}`:''}</span></div>`}).join('')}
+        <div class="v num">${b?fmtKr(b.avg*a.kwh):'–'}</div>
+        <span class="l">${b?`${when(b.start)}–${hm(b.end)}`:''}${n?` · nu ${fmtKr(pr(n)*a.kwh)}`:''}</span></div>`}).join('')}
   renderHistory();
 }
 
@@ -659,13 +736,13 @@ async function renderHistory(){
   const res=await pool(tasks,10,(d,t)=>{if(need)ld.querySelector('span').textContent=`Hämtar historik… ${Math.round(d/t*100)} %`});
   if(tok!==histToken)return; ld.classList.add('hidden');
   const per=Object.fromEntries(zq.map((z,k)=>[z,res.slice(k*dates.length,(k+1)*dates.length)]));
-  const act=acts().find(a=>a.id===S.metric),f=v=>v==null?null:adj(v)*(act?act.kwh:1),unit=act?' kr':' kr/kWh';
-  const series=zs.map(z=>({key:z,color:ZCOL[z],data:per[z].map(o=>o?f(o.a):null)}));
-  const band=one?{lo:per[fz].map(o=>o?f(o.mi):null),hi:per[fz].map(o=>o?f(o.ma):null)}:null;
+  const act=acts().find(a=>a.id===S.metric),f=(v,i)=>v==null?null:adj(v,dates[i])*(act?act.kwh:1),unit=act?' kr':' kr/kWh';
+  const series=zs.map(z=>({key:z,color:ZCOL[z],data:per[z].map((o,i)=>o?f(o.a,i):null)}));
+  const band=one?{lo:per[fz].map((o,i)=>o?f(o.mi,i):null),hi:per[fz].map((o,i)=>o?f(o.ma,i):null)}:null;
   chart($('histChart'),{height:280,series,band,xLabels:i=>dayShort(dates[i]),yFmt:v=>act?kr(v,v<10&&v%1?1:0):yKr(v),
-    tip:i=>`<span class="m">${dayLong(dates[i])} · dygnssnitt</span><br>`+series.map(s=>`${one?'':`<span style="color:${s.color==='var(--z1)'?'#C9A68C':s.color}">●</span> ${s.key} `}<b>${s.data[i]==null?'–':kr(s.data[i])}</b>${unit}`+(one&&per[fz][i]?`<br><span class="m">lägst ${kr(f(per[fz][i].mi))} · högst ${kr(f(per[fz][i].ma))}</span>`:'')).join('<br>')});
+    tip:i=>`<span class="m">${dayLong(dates[i])} · dygnssnitt</span><br>`+series.map(s=>`${one?'':`<span style="color:${s.color==='var(--z1)'?'#C9A68C':s.color}">●</span> ${s.key} `}<b>${s.data[i]==null?'–':kr(s.data[i])}</b>${unit}`+(one&&per[fz][i]?`<br><span class="m">lägst ${kr(f(per[fz][i].mi,i))} · högst ${kr(f(per[fz][i].ma,i))}</span>`:'')).join('<br>')});
   $('histLegend').innerHTML=series.map(s=>`<span><i style="background:${s.color}"></i>${s.key} dygnssnitt</span>`).join('')+(one?`<span><i style="background:#FFC08A;opacity:.45;height:10px"></i>dygnets lägsta–högsta</span>`:'');
-  const fv=per[fz].map(o=>o?f(o.a):null),vv=fv.filter(x=>x!=null),pavg=avgOf(vv),mi=Math.min(...vv),ma=Math.max(...vv);
+  const fv=per[fz].map((o,i)=>o?f(o.a,i):null),vv=fv.filter(x=>x!=null),pavg=avgOf(vv),mi=Math.min(...vv),ma=Math.max(...vv);
   if(one){
     $('histStats').innerHTML=`<div><span class="l">Snitt ${S.days} dagar</span><div class="v num">${kr(pavg)}<small>${unit}</small></div></div>
       <div><span class="l">Billigaste dygnet · ${dayShort(dates[fv.indexOf(mi)])}</span><div class="v num">${kr(mi)}<small>${unit}</small></div></div>
@@ -676,9 +753,9 @@ async function renderHistory(){
     $('histStats').style.gridTemplateColumns='repeat(4,minmax(0,1fr))';
   }
   // headline (answer first) for focus zone, always in kr/kWh
-  const tv=todaySlots(fz).map(p=>p.v); const kwh=per[fz].map(o=>o?adj(o.a):null).filter(x=>x!=null);
+  const tv=todaySlots(fz).map(pr); const kwh=per[fz].map((o,i)=>o?adj(o.a,dates[i]):null).filter(x=>x!=null);
   if(tv.length&&kwh.length){
-    const td=adj(avgOf(tv)),pa=avgOf(kwh),r=td/pa;
+    const td=avgOf(tv),pa=avgOf(kwh),r=td/pa;
     $('tH1').innerHTML=r>1.15?'Dyrare än<br>vanligt idag.':r<0.85?'Billigare än<br>vanligt idag.':'Ungefär som<br>vanligt idag.';
     $('tLead').textContent=`${fz} kostar i snitt ${kr(td)} kr/kWh idag, mot ${kr(pa)} kr/kWh de senaste ${S.days} dagarna.`;
     const pct=Math.round((r-1)*100);
@@ -693,8 +770,8 @@ function renderAll(){
   renderNav();
   if(S.view==='now')renderNow();else if(S.view==='time')renderTime();else renderProd();
   if(S.view==='prod'){prodFoot();return}
-  $('foot').innerHTML=`Spotpriser från <a href="https://www.elprisetjustnu.se" target="_blank" rel="noopener">elprisetjustnu.se</a>, uppdateras var 5:e minut.<br>`+(S.mode==='total'
-    ?`Totalpris = spot × 1,25 + påslag ${S.paslag} + energiskatt ${S.skatt} + elnät ${S.nat} öre/kWh. Fasta avgifter ingår inte.`
+  $('foot').innerHTML=`Spotpriser från <a href="https://www.elprisetjustnu.se" target="_blank" rel="noopener">elprisetjustnu.se</a>, uppdateras var 5:e minut.`+(S.km?` Nätbolag och energiskatt per kommun från <a href="https://boio.se/el" target="_blank" rel="noopener">Boio El</a> (källa Ei, CC BY 4.0).`:'')+'<br>'+(S.mode==='total'
+    ?`Totalpris = spot × 1,25 + påslag ${S.paslag} + energiskatt ${S.skatt} + elnät ${touOn()?`${S.natHog} (höglast) / ${S.natLag} (låglast)`:S.nat} öre/kWh`+(spreadOre()?` + fasta avgifter ${kr(spreadOre(),1)} öre/kWh.`:fixedYear()?`. Fasta avgifter ${kr(fixedYear(),0)} kr/år visas separat.`:'.')+(S.effekt?' Effektavgift ingår inte.':'')
     :S.mode==='moms'?'Spotpris inkl. 25 % moms. Nätavgift, energiskatt och påslag ingår inte, välj Totalpris under inställningar.'
     :'Rent spotpris exkl. moms, skatter och avgifter.');
 }
@@ -878,14 +955,84 @@ $('pRangeSlider').addEventListener('input',e=>$('pRangeLabel').textContent=e.tar
 $('pRangeSlider').addEventListener('change',e=>{S.pdays=+e.target.value;save();renderProdHist()});
 
 // settings
-function openSettings(){
+// ----- kommun via Boio:s öppna API (källa Ei, CC BY 4.0) -----
+const MON=['jan','feb','mars','apr','maj','juni','juli','aug','sep','okt','nov','dec'];
+let KOMMUNER=null,draftKm=null,draftEst=true;
+async function loadKommuner(){
+  if(KOMMUNER)return KOMMUNER;
+  try{const r=await fetch('https://boio.se/el/api/v1/kommuner');const j=await r.json();
+    KOMMUNER=j.kommuner.map(k=>({code:k.code,name:k.name,areas:k.areas,url:k.url,
+      tax:k.energyTax.oreIncVat,reduced:k.energyTax.reduced,
+      networks:k.grid.networks.map(n=>({company:n.company,share:n.populationSharePct,apartmentKr:n.apartmentKr,houseKr:n.houseKr,
+        apartmentRange:n.apartmentRangeKr,houseRange:n.houseRangeKr}))}));
+  }catch{KOMMUNER=[]}
+  return KOMMUNER}
+const netOf=(km,co)=>km&&(km.networks.find(n=>n.company===co)||km.networks[0]);
+function gridEstimate(km,co,bostad){const n=netOf(km,co);if(!n)return null;
+  const kwh=bostad==='house'?20000:2000;let kr=n[bostad+'Kr'];const rg=n[bostad+'Range'];
+  if(kr==null&&rg)kr=(rg.min+rg.max)/2;if(kr==null)return null;
+  return {kr,kwh,ore:Math.round(kr*100/kwh*10)/10,range:kr==null?rg:null}}
+function fillHourSelects(){
+  const h=[...Array(25).keys()];
+  $('cHogFrom').innerHTML=h.slice(0,24).map(x=>`<option value="${x}">${String(x).padStart(2,'0')}</option>`).join('');
+  $('cHogTo').innerHTML=h.slice(1).map(x=>`<option value="${x}">${String(x).padStart(2,'0')}</option>`).join('');
+  const m=MON.map((n,i)=>`<option value="${i+1}">${n}</option>`).join('');$('cHogM1').innerHTML=m;$('cHogM2').innerHTML=m}
+fillHourSelects();
+function kmInfo(){
+  const km=draftKm,el=$('kmInfo');
+  if(!km){el.innerHTML='Hittar du inte din kommun? Fyll i elområde och avgifter själv.';return}
+  const co=$('cNet').value,est=gridEstimate(km,co,$('cBostad').value),n=netOf(km,co);
+  el.innerHTML=`Energiskatt i ${km.name}: <b>${km.tax} öre/kWh</b>${km.reduced?' (sänkt)':''}.`+
+    (est?` Ei:s uppskattning för en ${$('cBostad').value==='house'?'villa med elvärme (20 000 kWh)':'lägenhet (2 000 kWh)'} hos ${n.company.replace(/ AB$/,'')}: <b>${Math.round(est.kr).toLocaleString('sv-SE')} kr/år</b> i nätavgift, i snitt ${kr(est.ore,1)} öre/kWh.`:'')+
+    ` <a href="${km.url}" target="_blank" rel="noopener">Mer om ${km.name} på boio.se</a>`;
+  if(draftEst&&est){$('cNat').value=est.ore;$('cNatFast').value=0;$('cTou').value='0';$('natHint').textContent='öre/kWh · uppskattat snitt inkl. fasta avgifter';}
+  else $('natHint').textContent='öre/kWh';
+  toggleFields()}
+function chooseKm(km,fromUser){
+  draftKm=km;const sel=$('cNet');
+  if(!km){sel.innerHTML='<option value="">Välj kommun först</option>';kmInfo();return}
+  sel.innerHTML=km.networks.map(n=>`<option value="${n.company.replace(/"/g,'&quot;')}">${n.company} · ${kr(n.share,0)} %</option>`).join('')+'<option value="__other">Annat bolag</option>';
+  sel.value=(S.km&&S.km.code===km.code&&S.netCo)||km.networks[0].company;
+  if(!sel.value)sel.value=km.networks[0].company;
+  if(fromUser){$('cHome').value=km.areas[0];$('cSkatt').value=km.tax;if($('cMode').value!=='total')$('cMode').value='total'}
+  kmInfo()}
+function toggleFields(){
+  const tot=$('cMode').value==='total',tou=$('cTou').value==='1',sp=$('cSpread').value==='1';
+  document.querySelectorAll('.tot').forEach(e=>e.classList.toggle('hidden',!tot));
+  $('fTou').classList.toggle('hidden',!tou);$('fNat').classList.toggle('hidden',tou);$('fArs').classList.toggle('hidden',!sp);
+  const fy=(+$('cNatFast').value||0)+(+$('cHandelFast').value||0)*12,ars=+$('cArs').value||0;
+  $('fixNote').innerHTML=fy?`Fasta avgifter: <b>${kr(fy,0)} kr/år</b> = ${kr(fy/365)} kr/dag = ${kr(fy/365/96,3)} kr/kvart`+(sp&&ars?` = ${kr(fy*100/ars,1)} öre/kWh`:'')+'.':'';
+}
+async function openSettings(){
+  draftEst=S.natEst;
   $('cHome').value=S.home;$('cMode').value=S.mode;$('cPaslag').value=S.paslag;$('cSkatt').value=S.skatt;$('cNat').value=S.nat;
+  $('cBostad').value=S.bostad;$('cHandelFast').value=S.handelFast||'';$('cNatFast').value=S.natFast||'';$('cTou').value=S.tou?'1':'0';
+  $('cNatHog').value=S.natHog;$('cNatLag').value=S.natLag;$('cHogFrom').value=S.hogFrom;$('cHogTo').value=S.hogTo;$('cHogM1').value=S.hogM1;$('cHogM2').value=S.hogM2;$('cHogDays').value=S.hogDays;
+  $('cEffekt').value=S.effekt||'';$('cSpread').value=S.spread?'1':'0';$('cArs').value=S.arsKwh||(S.bostad==='house'?20000:2000);
+  $('cKm').value=S.km?S.km.name:'';
   $('actFields').innerHTML=acts().map(a=>`<div class="fld"><label for="k_${a.id}">${a.t}<small>${a.desc}</small></label><input id="k_${a.id}" type="number" step="0.1" inputmode="decimal" data-act="${a.id}" value="${a.kwh}"></div>`).join('');
-  document.querySelectorAll('.tot').forEach(e=>e.style.opacity=S.mode==='total'?1:.45);$('dlg').showModal()}
+  chooseKm(S.km,false);
+  $('dlg').showModal();
+  const ks=await loadKommuner();
+  $('kmList').innerHTML=ks.map(k=>`<option value="${k.name}">`).join('');
+  if(S.km){const fresh=ks.find(k=>k.code===S.km.code);if(fresh){draftKm=fresh;kmInfo()}}
+}
 $('setBtn').onclick=openSettings;
-$('cMode').onchange=e=>document.querySelectorAll('.tot').forEach(x=>x.style.opacity=e.target.value==='total'?1:.45);
+$('introBtn').onclick=openSettings;
+$('introX').onclick=()=>{S.intro=true;save();$('intro').classList.add('hidden')};
+$('cKm').addEventListener('input',e=>{const v=e.target.value.trim().toLowerCase();if(!KOMMUNER)return;
+  const km=KOMMUNER.find(k=>k.name.toLowerCase()===v);if(km&&km!==draftKm)chooseKm(km,true);if(!v)chooseKm(null)});
+$('cNet').onchange=$('cBostad').onchange=()=>{if($('cBostad').value)$('cArs').value=$('cBostad').value==='house'?20000:2000;kmInfo()};
+['cMode','cTou','cSpread','cNatFast','cHandelFast','cArs'].forEach(id=>$(id).addEventListener('input',toggleFields));
+document.querySelectorAll('[data-net]').forEach(i=>i.addEventListener('input',()=>{draftEst=false;$('natHint').textContent='öre/kWh'}));
 $('dlg').addEventListener('close',()=>{
-  S.home=$('cHome').value;S.mode=$('cMode').value;S.paslag=+$('cPaslag').value||0;S.skatt=+$('cSkatt').value||0;S.nat=+$('cNat').value||0;
+  const num=id=>{const v=parseFloat($(id).value);return isNaN(v)?0:v};
+  S.home=$('cHome').value;S.mode=$('cMode').value;S.paslag=num('cPaslag');S.skatt=num('cSkatt');S.nat=num('cNat');
+  S.bostad=$('cBostad').value;S.handelFast=num('cHandelFast');S.natFast=num('cNatFast');S.tou=$('cTou').value==='1';
+  S.natHog=num('cNatHog');S.natLag=num('cNatLag');S.hogFrom=+$('cHogFrom').value;S.hogTo=+$('cHogTo').value;S.hogM1=+$('cHogM1').value;S.hogM2=+$('cHogM2').value;S.hogDays=$('cHogDays').value;
+  if(S.hogTo<=S.hogFrom)S.hogTo=Math.min(24,S.hogFrom+1);
+  S.effekt=num('cEffekt');S.spread=$('cSpread').value==='1';S.arsKwh=num('cArs');S.natEst=draftEst;
+  if(draftKm){S.km=draftKm;S.netCo=$('cNet').value==='__other'?null:$('cNet').value}
   document.querySelectorAll('[data-act]').forEach(i=>{const v=parseFloat(i.value);if(!isNaN(v))S.acts[i.dataset.act]=v});
   save();renderAll()});
 
